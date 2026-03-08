@@ -13,3 +13,21 @@ function init(){
     const btnReset = document.getElementById("btnReset")
     btnReset.addEventListener("click", reset)
 }
+
+const midaCasella = 100
+
+let refTauler
+
+function trobarBuit(){
+
+    for(let fila = 0; fila < 3; fila++){
+        for(let columna = 0; columna < 3; columna++){
+            if(tauler[fila][columna] === 0){
+                return {
+                    fila: fila,
+                    columna: columna
+                }
+            }
+        }
+    }
+}
