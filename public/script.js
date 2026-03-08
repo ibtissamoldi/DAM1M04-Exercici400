@@ -1,125 +1,139 @@
-let moviments = 0
+let moviments = 0;
+const numFiles = 3;
+const numColumnes = 3;
+const midaCasella = 100;
 
-let tauler = [
-  [0,1,2],
-  [3,4,5],
-  [6,7,8]
-]
+let tauler = [];
+let refTauler;
 
-function init(){
-    console.log("Joc iniciat")
-    pintarTauler()
-    refTauler = document.getElementById("tauler")
-    const btnReset = document.getElementById("btnReset")
-    btnReset.addEventListener("click", reset)
+function init() {
+    refTauler = document.getElementById("tauler");
+    document.getElementById("btnReset").addEventListener("click", reset);
+    reset();
 }
 
-const midaCasella = 100
+function crearTaulerResolt() {
+    let valor = 1;
+    const t = [];
+    for (let fila = 0; fila < numFiles; fila++) {
+        t[fila] = [];
+        for (let col = 0; col < numColumnes; col++) {
+            if (fila === numFiles - 1 && col === numColumnes - 1) t[fila][col] = 0;
+            else t[fila][col] = valor++;
+        }
+    }
+    return t;
+}
 
-let refTauler
+function barrejarTauler() {
+    tauler = crearTaulerResolt();
 
-function trobarBuit(){
+    const seqMoves = [
+        {fila: 2, col: 1},
+        {fila: 1, col: 1},
+        {fila: 1, col: 2},
+        {fila: 2, col: 2},
+        {fila: 2, col: 1},
+        {fila: 1, col: 1},
+        {fila: 0, col: 1},
+        {fila: 0, col: 2}
+    ];
 
-    for(let fila = 0; fila < 3; fila++){
-        for(let columna = 0; columna < 3; columna++){
-            if(tauler[fila][columna] === 0){
-                return {
-                    fila: fila,
-                    columna: columna
+    for (let i = 0; i < seqMoves.length; i++) {
+        const move = seqMoves[i];
+        if (esAdjacent(move.fila, move.col)) {
+            mourePeca(move.fila, move.col, false);
+        }
+    }
+}
+
+function reset() {
+    moviments = 0;
+    document.getElementById("moviments").textContent = moviments;
+    document.getElementById("missatge").textContent = "";
+    barrejarTauler();
+    pintarTauler();
+}
+
+function trobarBuit() {
+    for (let fila = 0; fila < numFiles; fila++) {
+        for (let col = 0; col < numColumnes; col++) {
+            if (tauler[fila][col] === 0) return { fila: fila, col: col };
+        }
+    }
+}
+
+function esAdjacent(fila, col) {
+    const posBuit = trobarBuit();
+
+    if (fila === posBuit.fila && (col === posBuit.col + 1 || col === posBuit.col - 1)) return true;
+    if (col === posBuit.col && (fila === posBuit.fila + 1 || fila === posBuit.fila - 1)) return true;
+
+    return false;
+}
+
+function mourePeca(fila, col, comptaMoviments = true) {
+    if (!esAdjacent(fila, col)) return;
+
+    const posBuit = trobarBuit();
+    const temp = tauler[fila][col];
+    tauler[fila][col] = tauler[posBuit.fila][posBuit.col];
+    tauler[posBuit.fila][posBuit.col] = temp;
+
+    if (comptaMoviments) {
+        moviments++;
+        document.getElementById("moviments").textContent = moviments;
+    }
+
+    pintarTauler();
+
+    if (estàResolut()) {
+        document.getElementById("missatge").textContent = `Puzzle resuelto en ${moviments} movimientos!`;
+    }
+}
+
+function pintarTauler() {
+    while (refTauler.firstChild) refTauler.removeChild(refTauler.firstChild);
+
+    for (let fila = 0; fila < numFiles; fila++) {
+        for (let col = 0; col < numColumnes; col++) {
+            const valor = tauler[fila][col];
+            if (valor === 0) continue;
+
+            const peca = document.createElement("div");
+            peca.classList.add("peca");
+
+            let row = 0;
+            let column = 0;
+            let count = 1;
+            for (let r = 0; r < numFiles; r++) {
+                for (let c = 0; c < numColumnes; c++) {
+                    if (count === valor) {
+                        row = r;
+                        column = c;
+                    }
+                    count++;
                 }
             }
+
+            peca.style.backgroundImage = "url('./assets/puzzle.png')";
+            peca.style.backgroundPosition = `${-column * midaCasella}px ${-row * midaCasella}px`;
+
+            peca.style.transform = `translate(${col * midaCasella}px, ${fila * midaCasella}px)`;
+
+            peca.addEventListener("click", () => mourePeca(fila, col));
+
+            refTauler.appendChild(peca);
         }
     }
 }
 
-function esAdjacent(fila, columna) {
-    let posBuit = trobarBuit()
-
-    if(fila == posBuit.fila && (columna == posBuit.columna + 1 || columna == posBuit.columna - 1)){
-        return true
-    }
-
-    if(columna == posBuit.columna && (fila == posBuit.fila + 1 || fila == posBuit.fila - 1)){
-        return true
-    }
-
-    return false
-}
-function mourePeca(fila, columna){
-    if(esAdjacent(fila, columna)){
-        let posBuit = trobarBuit()
-        let temp = tauler[fila][columna]
-        tauler[fila][columna] = tauler[posBuit.fila][posBuit.columna]
-        tauler[posBuit.fila][posBuit.columna] = temp
-
-        moviments++
-        document.getElementById("moviments").textContent = moviments
-
-        pintarTauler()
-
-        if(estàResolut()){
-            alert("Puzle resolt en " + moviments + " moviments!")
+function estàResolut() {
+    const resolt = crearTaulerResolt();
+    for (let fila = 0; fila < numFiles; fila++) {
+        for (let col = 0; col < numColumnes; col++) {
+            if (tauler[fila][col] !== resolt[fila][col]) return false;
         }
     }
+    return true;
 }
-
-function clicCasella(fila, columna){
-
-    
-    document.getElementById("fila").textContent = fila
-    document.getElementById("columna").textContent = columna
-
-
-    mourePeca(fila, columna)
-
-}
-function estàResolut(){
-
-    const resolt = [
-        [0,1,2],
-        [3,4,5],
-        [6,7,8]
-    ]
-
-    for(let fila=0; fila<3; fila++){
-        for(let col=0; col<3; col++){
-            if(tauler[fila][col] !== resolt[fila][col]){
-                return false
-            }
-        }
-    }
-    return true
-}
-
-function pintarTauler(){
-    const fills = refTauler.children
-    for(let i = fills.length - 1; i >= 0; i--){
-        refTauler.removeChild(fills[i])
-    }
-
-    for(let fila = 0; fila < 3; fila++){
-        for(let columna = 0; columna < 3; columna++){
-            let valor = tauler[fila][columna]
-            let peca = document.createElement("div")
-            peca.classList.add("peca")
-            peca.textContent = valor
-
-            let x = columna * midaCasella
-            let y = fila * midaCasella
-
-            peca.style.transform = `translate(${x}px, ${y}px)`
-
-            peca.addEventListener("click", function(){
-                clicCasella(fila, columna)
-            })
-            refTauler.appendChild(peca)
-        }
-    }
-}
-function reset(){
-    moviments = 0
-    document.getElementById("moviments").textContent = moviments
-}
-
-
-
