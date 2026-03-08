@@ -1,0 +1,36 @@
+body{
+    font-family: Arial;
+    text-align: center;
+}
+
+#tauler{
+    width: 300px;
+    height: 300px;
+    margin: 20px auto;
+
+    position: relative;
+    border: 2px solid black;
+}
+
+.peca{
+    width: 100px;
+    height: 100px;
+
+    position: absolute;
+
+    border: 1px solid gray;
+    background-color: lightblue;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+    font-weight: bold;
+
+    transition: transform 0.3s;
+}
+.peca-clicked {
+    background-color: lightgreen;
+    border-radius: 10%;
+}
