@@ -1,23 +1,26 @@
-let moviments = 0;
+/*declaro algunas variables globales*/
+let moviments = 0; /*número de movimientos del jugador*/
 const numFiles = 3;
 const numColumnes = 3;
-const midaCasella = 100;
+const midaCasella = 100;/*el tamaño de cada casilla en píxeles*/
 
-let tauler = [];
-let refTauler;
+let tauler = [];/*matriz 2D*/
+let refTauler;/*referencia del tablero del html*/
 
+/*se ejecuta al cargar la página*/
 function init() {
     refTauler = document.getElementById("tauler");
     document.getElementById("btnReset").addEventListener("click", reset);
-    reset();
+    reset();/*para iniciar la primera partida */
 }
-
 function crearTaulerResolt() {
     let valor = 1;
     const t = [];
-    for (let fila = 0; fila < numFiles; fila++) {
+    for (let fila = 0; fila < numFiles; fila++) 
+    {
         t[fila] = [];
-        for (let col = 0; col < numColumnes; col++) {
+        for (let col = 0; col < numColumnes; col++) 
+        {
             if (fila === numFiles - 1 && col === numColumnes - 1) t[fila][col] = 0;
             else t[fila][col] = valor++;
         }
@@ -28,22 +31,38 @@ function crearTaulerResolt() {
 function barrejarTauler() {
     tauler = crearTaulerResolt();
 
-    const seqMoves = [
-        {fila: 2, col: 1},
-        {fila: 1, col: 1},
-        {fila: 1, col: 2},
-        {fila: 2, col: 2},
-        {fila: 2, col: 1},
-        {fila: 1, col: 1},
-        {fila: 0, col: 1},
-        {fila: 0, col: 2}
-    ];
+    for (let i = 0; i < 50; i++) {
 
-    for (let i = 0; i < seqMoves.length; i++) {
-        const move = seqMoves[i];
-        if (esAdjacent(move.fila, move.col)) {
-            mourePeca(move.fila, move.col, false);
+        const buit = trobarBuit();
+
+        const possibles = [
+            { fila: buit.fila - 1, col: buit.col },
+            { fila: buit.fila + 1, col: buit.col },
+            { fila: buit.fila, col: buit.col - 1 },
+            { fila: buit.fila, col: buit.col + 1 }
+        ];
+
+        const movimentsValids = [];
+
+        for (let p of possibles) {
+            if (
+                p.fila >= 0 &&
+                p.fila < numFiles &&
+                p.col >= 0 &&
+                p.col < numColumnes
+            ) {
+                movimentsValids.push(p);
+            }
         }
+
+        const randomIndex = Math.floor(Math.random() * movimentsValids.length);
+        const move = movimentsValids[randomIndex];
+
+        const posBuit = trobarBuit();
+
+        const temp = tauler[move.fila][move.col];
+        tauler[move.fila][move.col] = tauler[posBuit.fila][posBuit.col];
+        tauler[posBuit.fila][posBuit.col] = temp;
     }
 }
 
@@ -88,7 +107,7 @@ function mourePeca(fila, col, comptaMoviments = true) {
     pintarTauler();
 
     if (estàResolut()) {
-        document.getElementById("missatge").textContent = `Puzzle resuelto en ${moviments} movimientos!`;
+        document.getElementById("missatge").textContent = `Puzle resolt en ${moviments} moviments!`;
     }
 }
 
@@ -102,7 +121,7 @@ function pintarTauler() {
 
             const peca = document.createElement("div");
             peca.classList.add("peca");
-
+            /*   
             let row = 0;
             let column = 0;
             let count = 1;
@@ -114,7 +133,9 @@ function pintarTauler() {
                     }
                     count++;
                 }
-            }
+            }*/
+            let row = Math.floor((valor - 1) / numColumnes);
+            let column = (valor - 1) % numColumnes;
 
             peca.style.backgroundImage = "url('./assets/puzzle.png')";
             peca.style.backgroundPosition = `${-column * midaCasella}px ${-row * midaCasella}px`;

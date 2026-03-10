@@ -9,6 +9,7 @@ body {
     margin: 20px auto;
     position: relative;
     border: 2px solid black;
+    background: #eee;
 }
 
 .peca {
@@ -18,13 +19,14 @@ body {
     border: 1px solid gray;
     background-size: 300px 300px;
     cursor: pointer;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     font-weight: bold;
-    transition: transform 0.3s;
+    transition: transform 0.15s ease;
+}
+.peca:active {
+    transform: scale(0.95);
 }
 
 #missatge {
