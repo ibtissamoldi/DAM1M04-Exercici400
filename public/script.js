@@ -92,6 +92,7 @@ function esAdjacent(fila, col) {
 }
 
 function mourePeca(fila, col, comptaMoviments = true) {
+    if (estàResolut()) return;
     if (!esAdjacent(fila, col)) return;
 
     const posBuit = trobarBuit();
@@ -107,7 +108,7 @@ function mourePeca(fila, col, comptaMoviments = true) {
     pintarTauler();
 
     if (estàResolut()) {
-        document.getElementById("missatge").textContent = `Puzle resolt en ${moviments} moviments!`;
+        document.getElementById("missatge").textContent = `🎉 Puzle resolt en ${moviments} moviments!`;
     }
 }
 
@@ -117,8 +118,17 @@ function pintarTauler() {
     for (let fila = 0; fila < numFiles; fila++) {
         for (let col = 0; col < numColumnes; col++) {
             const valor = tauler[fila][col];
-            if (valor === 0) continue;
+            const casella = document.createElement("div");
+            casella.classList.add("casella");
 
+            casella.style.left = `${col * midaCasella}px`;
+            casella.style.top = `${fila * midaCasella}px`;
+
+            if (valor === 0) {
+                casella.classList.add("buit");
+                refTauler.appendChild(casella);
+                continue;
+            }
             const peca = document.createElement("div");
             peca.classList.add("peca");
             /*   
@@ -137,14 +147,15 @@ function pintarTauler() {
             let row = Math.floor((valor - 1) / numColumnes);
             let column = (valor - 1) % numColumnes;
 
-            peca.style.backgroundImage = "url('./assets/puzzle.png')";
-            peca.style.backgroundPosition = `${-column * midaCasella}px ${-row * midaCasella}px`;
+            peca.style.backgroundImage = `url('./assets/${valor}.png')`;
+            peca.style.backgroundSize = "cover";
 
             peca.style.transform = `translate(${col * midaCasella}px, ${fila * midaCasella}px)`;
 
             peca.addEventListener("click", () => mourePeca(fila, col));
 
-            refTauler.appendChild(peca);
+            casella.appendChild(peca);
+            refTauler.appendChild(casella);
         }
     }
 }

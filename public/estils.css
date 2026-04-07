@@ -35,3 +35,13 @@ body {
     color: green;
     margin-top: 10px;
 }
+.casella {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+}
+
+.buit {
+    background-color: #ccc;
+    border: 1px dashed #999;
+}
