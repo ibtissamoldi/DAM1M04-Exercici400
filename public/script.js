@@ -131,26 +131,15 @@ function pintarTauler() {
             }
             const peca = document.createElement("div");
             peca.classList.add("peca");
-            /*   
-            let row = 0;
-            let column = 0;
-            let count = 1;
-            for (let r = 0; r < numFiles; r++) {
-                for (let c = 0; c < numColumnes; c++) {
-                    if (count === valor) {
-                        row = r;
-                        column = c;
-                    }
-                    count++;
-                }
-            }*/
+            
             let row = Math.floor((valor - 1) / numColumnes);
             let column = (valor - 1) % numColumnes;
 
             peca.style.backgroundImage = `url('./assets/${valor}.png')`;
             peca.style.backgroundSize = "cover";
 
-            peca.style.transform = `translate(${col * midaCasella}px, ${fila * midaCasella}px)`;
+            peca.style.width = "100%";
+            peca.style.height = "100%";
 
             peca.addEventListener("click", () => mourePeca(fila, col));
 
